@@ -1,27 +1,20 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-import { useAuth } from '../hooks/useAuth';
-
+import React, { useContext } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import AuthStack from './AuthStack';
 import MainTabNavigator from './MainTabNavigator';
-
-const Stack = createNativeStackNavigator();
+import { AuthContext } from '../context';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 
 export default function AppNavigator() {
-  const { user, isLoading } = useAuth();
+  const { isAuthenticated, loading } = useContext(AuthContext);
 
-  if (isLoading) {
+  if (loading) {
     return <LoadingSpinner />;
   }
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {user ? (
-        <Stack.Screen name="Main" component={MainTabNavigator} />
-      ) : (
-        <Stack.Screen name="Auth" component={AuthStack} />
-      )}
-    </Stack.Navigator>
+    <NavigationContainer>
+      {isAuthenticated ? <MainTabNavigator /> : <AuthStack />}
+    </NavigationContainer>
   );
 }
