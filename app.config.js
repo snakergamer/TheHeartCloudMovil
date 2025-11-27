@@ -30,6 +30,9 @@ module.exports = {
     },
     plugins: [],
     extra: {
+      eas: {
+        projectId: "4b63c9f1-0a0e-46cb-9a70-338e30c997c4"
+      },
       VITE_FIREBASE_API_KEY: process.env.VITE_FIREBASE_API_KEY || "",
       VITE_FIREBASE_AUTH_DOMAIN: process.env.VITE_FIREBASE_AUTH_DOMAIN || "",
       VITE_FIREBASE_PROJECT_ID: process.env.VITE_FIREBASE_PROJECT_ID || "",
