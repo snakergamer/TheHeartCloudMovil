@@ -32,7 +32,6 @@ export const registerSchema = yup.object().shape({
     .min(8, 'La contraseña debe tener al menos 8 caracteres')
     .max(16, 'La contraseña no puede exceder 16 caracteres')
     .test('no-spaces', 'La contraseña no puede contener espacios', (value) => !value || !/\s/.test(value))
-    .test('no-emojis', 'La contraseña no puede contener emojis', (value) => !value || !/\p{Emoji}/u.test(value))
     .test('no-quotes', 'La contraseña no puede contener comillas', (value) => !value || !/['"`]/.test(value)),
 
   confirmPassword: yup
@@ -102,7 +101,6 @@ export const newPasswordSchema = yup.object().shape({
     .min(8, 'La contraseña debe tener al menos 8 caracteres')
     .max(16, 'La contraseña no puede exceder 16 caracteres')
     .test('no-spaces', 'La contraseña no puede contener espacios', (value) => !value || !/\s/.test(value))
-    .test('no-emojis', 'La contraseña no puede contener emojis', (value) => !value || !/\p{Emoji}/u.test(value))
     .test('no-quotes', 'La contraseña no puede contener comillas', (value) => !value || !/['"`]/.test(value)),
 
   confirmPassword: yup

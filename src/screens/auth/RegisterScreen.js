@@ -3,7 +3,7 @@
  * Pantalla para crear cuenta
  */
 
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -20,10 +21,10 @@ import { registerSchema } from '../../services/validation';
 import CustomInput from '../../components/forms/CustomInput';
 import CustomButton from '../../components/common/CustomButton';
 import ErrorMessage from '../../components/common/ErrorMessage';
+import logo from '../../assets/images/illustrations/logoprincipal.png';
 
 const RegisterScreen = ({ navigation }) => {
   const { register, loading, error, setError } = useContext(AuthContext);
-  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(registerSchema),
@@ -34,7 +35,6 @@ const RegisterScreen = ({ navigation }) => {
       confirmPassword: '',
       securityQuestion: '',
       securityAnswer: '',
-      termsAccepted: false,
     },
   });
 
@@ -42,7 +42,7 @@ const RegisterScreen = ({ navigation }) => {
     try {
       await register(data);
     } catch (err) {
-      setError(err.message);
+      // Error handled in context
     }
   };
 
@@ -51,137 +51,125 @@ const RegisterScreen = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         nestedScrollEnabled={true}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <Image source={logo} style={styles.logo} resizeMode="contain" />
+          </View>
           <Text style={styles.title}>Crear Cuenta</Text>
-          <Text style={styles.subtitle}>TheHeartCloud</Text>
+          <Text style={styles.subtitle}>Únete a TheHeartCloud</Text>
         </View>
 
-        {error && (
-          <ErrorMessage message={error} onDismiss={() => setError(null)} />
-        )}
-
-        <View style={styles.form}>
-          <Controller
-            control={control}
-            name="name"
-            render={({ field: { value, onChangeText } }) => (
-              <CustomInput
-                label="Nombre (5-15 caracteres)"
-                placeholder="Tu nombre"
-                value={value}
-                onChangeText={onChangeText}
-                error={errors.name?.message}
-                maxLength={15}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { value, onChangeText } }) => (
-              <CustomInput
-                label="Correo Electrónico"
-                placeholder="tu@correo.com"
-                value={value}
-                onChangeText={onChangeText}
-                error={errors.email?.message}
-                keyboardType="email-address"
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { value, onChangeText } }) => (
-              <CustomInput
-                label="Contraseña (8-16 caracteres)"
-                placeholder="Crea una contraseña segura"
-                value={value}
-                onChangeText={onChangeText}
-                error={errors.password?.message}
-                secureTextEntry
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="confirmPassword"
-            render={({ field: { value, onChangeText } }) => (
-              <CustomInput
-                label="Confirmar Contraseña"
-                placeholder="Confirma tu contraseña"
-                value={value}
-                onChangeText={onChangeText}
-                error={errors.confirmPassword?.message}
-                secureTextEntry
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="securityQuestion"
-            render={({ field: { value, onChangeText } }) => (
-              <CustomInput
-                label="Pregunta de Seguridad"
-                placeholder="¿Cuál es tu película favorita?"
-                value={value}
-                onChangeText={onChangeText}
-                error={errors.securityQuestion?.message}
-                maxLength={100}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="securityAnswer"
-            render={({ field: { value, onChangeText } }) => (
-              <CustomInput
-                label="Respuesta de Seguridad"
-                placeholder="Tu respuesta (sin acentos)"
-                value={value}
-                onChangeText={onChangeText}
-                error={errors.securityAnswer?.message}
-                maxLength={60}
-              />
-            )}
-          />
-
-          <TouchableOpacity 
-            style={styles.termsContainer}
-            onPress={() => setTermsAccepted(!termsAccepted)}
-          >
-            <View style={[styles.checkbox, termsAccepted && styles.checkboxChecked]}>
-              {termsAccepted && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <View style={styles.termsText}>
-              <Text style={styles.termsLabel}>Acepto los </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Terms')}>
-                <Text style={styles.link}>términos y condiciones</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-
-          {errors.termsAccepted && (
-            <Text style={styles.error}>{errors.termsAccepted.message}</Text>
+        <View style={styles.card}>
+          {error && (
+            <ErrorMessage message={error} onDismiss={() => setError(null)} />
           )}
 
-          <CustomButton
-            title="Crear Cuenta"
-            onPress={handleSubmit(onSubmit)}
-            loading={loading}
-            size="large"
-            disabled={!termsAccepted}
-          />
+          <View style={styles.form}>
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { value, onChange } }) => (
+                <CustomInput
+                  label="Nombre"
+                  placeholder="Tu nombre completo"
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.name?.message}
+                  maxLength={15}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { value, onChange } }) => (
+                <CustomInput
+                  label="Correo Electrónico"
+                  placeholder="ejemplo@correo.com"
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.email?.message}
+                  keyboardType="email-address"
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { value, onChange } }) => (
+                <CustomInput
+                  label="Contraseña"
+                  placeholder="••••••••"
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.password?.message}
+                  secureTextEntry
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="confirmPassword"
+              render={({ field: { value, onChange } }) => (
+                <CustomInput
+                  label="Confirmar Contraseña"
+                  placeholder="••••••••"
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.confirmPassword?.message}
+                  secureTextEntry
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="securityQuestion"
+              render={({ field: { value, onChange } }) => (
+                <CustomInput
+                  label="Pregunta de Seguridad"
+                  placeholder="¿Cuál es tu película favorita?"
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.securityQuestion?.message}
+                  maxLength={100}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="securityAnswer"
+              render={({ field: { value, onChange } }) => (
+                <CustomInput
+                  label="Respuesta"
+                  placeholder="Tu respuesta"
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.securityAnswer?.message}
+                  maxLength={60}
+                />
+              )}
+            />
+
+            <View style={styles.buttonContainer}>
+              <CustomButton
+                title="Crear Cuenta"
+                onPress={handleSubmit(onSubmit)}
+                loading={loading}
+                size="large"
+              />
+            </View>
+          </View>
         </View>
 
         <View style={styles.footer}>
@@ -198,85 +186,81 @@ const RegisterScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f3f4f6',
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 16,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 40,
   },
   header: {
-    marginBottom: 24,
-    marginTop: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#3b82f6',
-    fontWeight: '600',
-  },
-  form: {
+    alignItems: 'center',
     marginBottom: 24,
   },
-  termsContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 2,
-    borderColor: '#ddd',
-    borderRadius: 4,
+  logoContainer: {
+    width: 80,
+    height: 80,
+    backgroundColor: '#eff6ff',
+    borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 8,
-    marginTop: 2,
+    marginBottom: 16,
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    padding: 10,
   },
-  checkboxChecked: {
-    backgroundColor: '#3b82f6',
-    borderColor: '#3b82f6',
+  logo: {
+    width: '100%',
+    height: '100%',
   },
-  checkmark: {
-    color: '#fff',
-    fontWeight: 'bold',
+  title: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1f2937',
+    marginBottom: 8,
+    letterSpacing: 0.5,
   },
-  termsText: {
-    flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  subtitle: {
+    fontSize: 16,
+    color: '#6b7280',
+    fontWeight: '500',
   },
-  termsLabel: {
-    fontSize: 13,
-    color: '#374151',
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 5,
+    marginBottom: 24,
   },
-  link: {
-    color: '#3b82f6',
-    fontWeight: '600',
-    textDecorationLine: 'underline',
+  form: {
+    width: '100%',
   },
-  error: {
-    color: '#ef4444',
-    fontSize: 12,
-    marginBottom: 12,
+  buttonContainer: {
+    marginTop: 16,
   },
   footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 20,
   },
   footerText: {
     color: '#6b7280',
     fontSize: 14,
-    marginBottom: 8,
+    marginRight: 4,
   },
   loginLink: {
     color: '#3b82f6',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });
 

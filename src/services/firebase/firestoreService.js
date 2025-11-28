@@ -6,6 +6,7 @@
 import {
   collection,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   doc,
@@ -241,7 +242,7 @@ export const userService = {
   create: async (uid, userData) => {
     try {
       const userRef = doc(db, 'users', uid);
-      await updateDoc(userRef, {
+      await setDoc(userRef, {
         ...userData,
         createdAt: serverTimestamp(),
       });

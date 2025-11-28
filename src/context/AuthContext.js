@@ -7,6 +7,7 @@ import React, { createContext, useReducer, useCallback, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authService from '../services/firebase/authService';
 import { userService } from '../services/firebase/firestoreService';
+import { getFirebaseErrorMessage } from '../utils/firebaseErrors';
 
 export const AuthContext = createContext();
 
@@ -66,38 +67,27 @@ export const AuthProvider = ({ children }) => {
 
   // Verificar si el usuario ya está autenticado al iniciar
   useEffect(() => {
-    const checkAuth = async () => {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      try {
-        const unsubscribe = authService.onAuthStateChanged(async (firebaseUser) => {
-          if (firebaseUser) {
-            // Usuario autenticado
-            const userData = await userService.getById(firebaseUser.uid);
-            dispatch({
-              type: 'SET_USER',
-              payload: {
-                uid: firebaseUser.uid,
-                email: firebaseUser.email,
-                name: firebaseUser.displayName,
-                ...userData,
-              },
-            });
-          } else {
-            // Usuario no autenticado
-            dispatch({ type: 'SET_USER', payload: null });
-          }
-          dispatch({ type: 'SET_LOADING', payload: false });
-        });
+    let unsubscribe;
 
-        return unsubscribe;
+    const checkAuth = async () => {
+      try {
+        // Solo escuchar cambios de autenticación cuando ya hay un usuario autenticado
+        if (state.isAuthenticated) {
+          unsubscribe = authService.onAuthStateChanged(async (firebaseUser) => {
+            if (!firebaseUser) {
+              // Usuario se deslogueó
+              dispatch({ type: 'SET_USER', payload: null });
+            }
+          });
+        }
       } catch (error) {
-        dispatch({ type: 'SET_ERROR', payload: error.message });
-        dispatch({ type: 'SET_LOADING', payload: false });
+        console.error('Auth check error:', error);
       }
     };
 
     checkAuth();
-  }, []);
+    return () => unsubscribe?.();
+  }, [state.isAuthenticated]);
 
   const login = useCallback(async (email, password) => {
     dispatch({ type: 'LOGIN_REQUEST' });
@@ -118,7 +108,8 @@ export const AuthProvider = ({ children }) => {
         },
       });
     } catch (error) {
-      dispatch({ type: 'LOGIN_ERROR', payload: error.message });
+      console.log('Login Error:', error.code);
+      dispatch({ type: 'LOGIN_ERROR', payload: getFirebaseErrorMessage(error.code || error.message) });
       throw error;
     }
   }, []);
@@ -151,7 +142,8 @@ export const AuthProvider = ({ children }) => {
         },
       });
     } catch (error) {
-      dispatch({ type: 'REGISTER_ERROR', payload: error.message });
+      console.log('Register Error:', error.code);
+      dispatch({ type: 'REGISTER_ERROR', payload: getFirebaseErrorMessage(error.code || error.message) });
       throw error;
     }
   }, []);
@@ -159,10 +151,9 @@ export const AuthProvider = ({ children }) => {
   const logout = useCallback(async () => {
     try {
       await authService.logout();
-      await AsyncStorage.removeItem('userToken');
       dispatch({ type: 'LOGOUT' });
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: error.message });
+      dispatch({ type: 'SET_ERROR', payload: getFirebaseErrorMessage(error.code || error.message) });
     }
   }, []);
 
@@ -173,7 +164,7 @@ export const AuthProvider = ({ children }) => {
         dispatch({ type: 'UPDATE_USER', payload: userData });
       }
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: error.message });
+      dispatch({ type: 'SET_ERROR', payload: getFirebaseErrorMessage(error.code || error.message) });
       throw error;
     }
   }, [state.user]);
@@ -186,7 +177,7 @@ export const AuthProvider = ({ children }) => {
         dispatch({ type: 'DELETE_ACCOUNT' });
       }
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: error.message });
+      dispatch({ type: 'SET_ERROR', payload: getFirebaseErrorMessage(error.code || error.message) });
       throw error;
     }
   }, [state.user]);
