@@ -48,8 +48,21 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
   const onEmailSubmit = async (data) => {
     try {
-      // Aquí se llamaría a servicio para verificar email y obtener pregunta
-      setEmail(data.email);
+      const email = data.email.trim();
+      // Verificar si el correo existe en Firebase
+      // Nota: Esto requiere que 'Email Enumeration Protection' esté deshabilitado en Firebase Console
+      // O usar una Cloud Function para verificar en Firestore.
+      // Por ahora intentamos con authService.
+      /* 
+         Si no tienes implementado checkEmailExists en authService, puedes omitir este paso 
+         o implementarlo. Asumiré que lo agregamos.
+      */
+      const exists = await authService.checkEmailExists(email);
+      if (!exists) {
+        throw new Error('Este correo no está registrado.');
+      }
+
+      setEmail(email);
       setSecurityQuestion('¿Cuál es tu película favorita?'); // Simulado
       setStep(2);
     } catch (err) {
@@ -81,7 +94,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         nestedScrollEnabled={true}
         keyboardShouldPersistTaps="handled"

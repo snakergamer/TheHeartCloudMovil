@@ -90,9 +90,17 @@ export const postService = {
   getByForum: async (forumId) => {
     try {
       const postsRef = collection(db, 'posts');
-      const q = query(postsRef, where('forumId', '==', forumId), orderBy('createdAt', 'desc'));
+      // Removed orderBy to avoid missing index error
+      const q = query(postsRef, where('forumId', '==', forumId));
       const snapshot = await getDocs(q);
-      return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const posts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+      // Sort client-side
+      return posts.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(0);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(0);
+        return dateB - dateA;
+      });
     } catch (error) {
       console.error('Error fetching posts:', error);
       throw error;
@@ -169,9 +177,17 @@ export const commentService = {
   getByPost: async (postId) => {
     try {
       const commentsRef = collection(db, 'comments');
-      const q = query(commentsRef, where('postId', '==', postId), orderBy('createdAt', 'desc'));
+      // Removed orderBy to avoid missing index error
+      const q = query(commentsRef, where('postId', '==', postId));
       const snapshot = await getDocs(q);
-      return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const comments = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+      // Sort client-side
+      return comments.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(0);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(0);
+        return dateB - dateA;
+      });
     } catch (error) {
       console.error('Error fetching comments:', error);
       throw error;
@@ -210,12 +226,16 @@ export const commentService = {
       await deleteDoc(commentRef);
 
       // Actualizar conteo de comentarios en el post
-      const postRef = doc(db, 'posts', postId);
-      const postDoc = await getDoc(postRef);
-      if (postDoc.exists()) {
-        await updateDoc(postRef, {
-          commentsCount: Math.max((postDoc.data().commentsCount || 1) - 1, 0),
-        });
+      // Actualizar conteo de comentarios en el post
+      if (postId) {
+        const postRef = doc(db, 'posts', postId);
+        const postDoc = await getDoc(postRef);
+        if (postDoc.exists()) {
+          const currentCount = postDoc.data().commentsCount || 0;
+          await updateDoc(postRef, {
+            commentsCount: Math.max(currentCount - 1, 0),
+          });
+        }
       }
     } catch (error) {
       console.error('Error deleting comment:', error);

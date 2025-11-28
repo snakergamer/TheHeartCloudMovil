@@ -66,7 +66,7 @@ const forumReducer = (state, action) => {
     case 'DELETE_COMMENT_SUCCESS':
       return {
         ...state,
-        comments: state.comments.filter((c) => c.id !== action.payload),
+        comments: (state.comments || []).filter((c) => c.id !== action.payload),
       };
 
     case 'SET_ERROR':

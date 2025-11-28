@@ -17,7 +17,9 @@ const CommentCard = ({ comment, onDelete, isAuthor }) => {
       <View style={styles.header}>
         <View>
           <Text style={styles.author}>{comment.author?.name || 'Anónimo'}</Text>
-          <Text style={styles.date}>{comment.createdAt}</Text>
+          <Text style={styles.date}>
+            {comment.createdAt?.toDate ? comment.createdAt.toDate().toLocaleDateString() : ''}
+          </Text>
         </View>
         {isAuthor && (
           <TouchableOpacity onPress={onDelete}>
@@ -39,9 +41,9 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#f9fafb',
     borderRadius: 6,
-    padding: 12,
-    marginBottom: 8,
-    borderLeftWidth: 3,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 4,
     borderLeftColor: '#3b82f6',
   },
   header: {

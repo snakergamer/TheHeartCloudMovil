@@ -54,7 +54,7 @@ const CreatePostScreen = ({ navigation }) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           nestedScrollEnabled={true}
           keyboardShouldPersistTaps="handled"
@@ -72,12 +72,12 @@ const CreatePostScreen = ({ navigation }) => {
             <Controller
               control={control}
               name="title"
-              render={({ field: { value, onChangeText } }) => (
+              render={({ field: { value, onChange } }) => (
                 <CustomInput
                   label="Título"
                   placeholder="¿Cuál es el tema?"
                   value={value}
-                  onChangeText={onChangeText}
+                  onChangeText={onChange}
                   error={errors.title?.message}
                   maxLength={100}
                 />
@@ -87,7 +87,7 @@ const CreatePostScreen = ({ navigation }) => {
             <Controller
               control={control}
               name="content"
-              render={({ field: { value, onChangeText } }) => (
+              render={({ field: { value, onChange } }) => (
                 <>
                   <View style={styles.contentLabel}>
                     <Text style={styles.label}>Contenido (10-300 caracteres)</Text>
@@ -96,7 +96,7 @@ const CreatePostScreen = ({ navigation }) => {
                   <CustomInput
                     placeholder="Comparte tus pensamientos..."
                     value={value}
-                    onChangeText={onChangeText}
+                    onChangeText={onChange}
                     error={errors.content?.message}
                     maxLength={300}
                   />

@@ -68,7 +68,7 @@ const CreateCommentScreen = ({ navigation, route }) => {
             <Controller
               control={control}
               name="content"
-              render={({ field: { value, onChangeText } }) => (
+              render={({ field: { value, onChange } }) => (
                 <>
                   <View style={styles.contentLabel}>
                     <Text style={styles.label}>Tu comentario (5-150 caracteres)</Text>
@@ -77,7 +77,7 @@ const CreateCommentScreen = ({ navigation, route }) => {
                   <CustomInput
                     placeholder="Comparte tu opinión..."
                     value={value}
-                    onChangeText={onChangeText}
+                    onChangeText={onChange}
                     error={errors.content?.message}
                     maxLength={150}
                   />

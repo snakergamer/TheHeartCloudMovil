@@ -32,7 +32,9 @@ const PostDetailScreen = ({ navigation }) => {
   };
 
   const handleDeleteComment = (commentId) => {
-    deleteComment(commentId);
+    if (selectedPost?.id) {
+      deleteComment(commentId, selectedPost.id);
+    }
   };
 
   if (loading) {

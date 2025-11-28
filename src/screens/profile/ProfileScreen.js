@@ -25,12 +25,11 @@ const ProfileScreen = ({ navigation }) => {
       'Cerrar Sesión',
       '¿Estás seguro de que quieres cerrar sesión?',
       [
-        { text: 'Cancelar', onPress: () => {}, style: 'cancel' },
+        { text: 'Cancelar', onPress: () => { }, style: 'cancel' },
         {
           text: 'Cerrar Sesión',
           onPress: () => {
             logout();
-            navigation.navigate('Login');
           },
           style: 'destructive',
         },
@@ -43,7 +42,7 @@ const ProfileScreen = ({ navigation }) => {
       'Eliminar Cuenta',
       'Esta acción no se puede deshacer. Se eliminarán todos tus datos, foros creados y publicaciones.',
       [
-        { text: 'Cancelar', onPress: () => {}, style: 'cancel' },
+        { text: 'Cancelar', onPress: () => { }, style: 'cancel' },
         {
           text: 'Eliminar',
           onPress: () => navigation.navigate('DeleteAccountConfirm'),

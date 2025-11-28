@@ -71,6 +71,7 @@ const ForumDetailScreen = ({ navigation }) => {
         )}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
+        ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>No hay publicaciones aún</Text>

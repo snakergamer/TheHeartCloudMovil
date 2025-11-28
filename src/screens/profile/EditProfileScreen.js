@@ -3,7 +3,7 @@
  * Pantalla para editar perfil
  */
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -25,13 +25,22 @@ import MedicalDisclaimer from '../../components/common/MedicalDisclaimer';
 const EditProfileScreen = ({ navigation }) => {
   const { user, updateUser, loading, error, setError } = useContext(AuthContext);
 
-  const { control, handleSubmit, formState: { errors } } = useForm({
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: yupResolver(editProfileSchema),
     defaultValues: {
       name: user?.name || '',
       bio: user?.bio || '',
     },
   });
+
+  useEffect(() => {
+    if (user?.uid) {
+      reset({
+        name: user.name || '',
+        bio: user.bio || '',
+      });
+    }
+  }, [user?.uid, reset]);
 
   const onSubmit = async (data) => {
     try {
@@ -48,7 +57,7 @@ const EditProfileScreen = ({ navigation }) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           nestedScrollEnabled={true}
           keyboardShouldPersistTaps="handled"
@@ -65,12 +74,12 @@ const EditProfileScreen = ({ navigation }) => {
             <Controller
               control={control}
               name="name"
-              render={({ field: { value, onChangeText } }) => (
+              render={({ field: { value, onChange } }) => (
                 <CustomInput
                   label="Nombre (5-15 caracteres)"
                   placeholder="Tu nombre"
                   value={value}
-                  onChangeText={onChangeText}
+                  onChangeText={onChange}
                   error={errors.name?.message}
                   maxLength={15}
                 />
@@ -80,7 +89,7 @@ const EditProfileScreen = ({ navigation }) => {
             <Controller
               control={control}
               name="bio"
-              render={({ field: { value, onChangeText } }) => (
+              render={({ field: { value, onChange } }) => (
                 <>
                   <View style={styles.bioLabel}>
                     <Text style={styles.label}>Biografía (hasta 250 caracteres)</Text>
@@ -89,7 +98,7 @@ const EditProfileScreen = ({ navigation }) => {
                   <CustomInput
                     placeholder="Cuéntanos sobre ti..."
                     value={value}
-                    onChangeText={onChangeText}
+                    onChangeText={onChange}
                     error={errors.bio?.message}
                     maxLength={250}
                   />

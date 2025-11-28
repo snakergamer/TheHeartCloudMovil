@@ -4,7 +4,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ForumStack from './ForumStack';
-import { ProfileScreen, EditProfileScreen } from '../screens/profile';
+import { ProfileScreen, EditProfileScreen, DeleteAccountConfirmScreen } from '../screens/profile';
 import { TermsScreen, PrivacyScreen } from '../screens/common';
 
 const Tab = createBottomTabNavigator();
@@ -23,32 +23,40 @@ const ProfileStackNavigator = () => {
         },
       }}
     >
-      <Stack.Screen 
-        name="ProfileMain" 
+      <Stack.Screen
+        name="ProfileMain"
         component={ProfileScreen}
         options={{
           headerShown: false,
         }}
       />
-      <Stack.Screen 
-        name="EditProfile" 
+      <Stack.Screen
+        name="EditProfile"
         component={EditProfileScreen}
         options={{
           title: 'Editar Perfil',
         }}
       />
-      <Stack.Screen 
-        name="Terms" 
+      <Stack.Screen
+        name="Terms"
         component={TermsScreen}
         options={{
           title: 'Términos y Condiciones',
         }}
       />
-      <Stack.Screen 
-        name="Privacy" 
+      <Stack.Screen
+        name="Privacy"
         component={PrivacyScreen}
         options={{
           title: 'Política de Privacidad',
+        }}
+      />
+      <Stack.Screen
+        name="DeleteAccountConfirm"
+        component={DeleteAccountConfirmScreen}
+        options={{
+          title: 'Eliminar Cuenta',
+          headerStyle: { backgroundColor: '#ef4444' },
         }}
       />
     </Stack.Navigator>
@@ -68,8 +76,8 @@ const MainTabNavigator = () => {
         },
       }}
     >
-      <Tab.Screen 
-        name="ForumTab" 
+      <Tab.Screen
+        name="ForumTab"
         component={ForumStack}
         options={{
           title: 'Foros',
@@ -77,8 +85,8 @@ const MainTabNavigator = () => {
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>📚</Text>,
         }}
       />
-      <Tab.Screen 
-        name="ProfileTab" 
+      <Tab.Screen
+        name="ProfileTab"
         component={ProfileStackNavigator}
         options={{
           title: 'Perfil',
